@@ -32,12 +32,13 @@
             };
 
             // Send the data to the server
-            fetch('https://your-server-url.com/endpoint', {
+            fetch('http://18.233.162.214:8080/webhook', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                mode: "cors"  // Enables CORS support
             })
             .then(response => response.json())
             .then(data => {
