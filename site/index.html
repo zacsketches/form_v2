@@ -30,6 +30,9 @@
     document.getElementById("numericForm").addEventListener("submit", function(event) {
       event.preventDefault();  // Prevent form submission
 
+      // Clear previous message from the responseMessage div
+      document.getElementById("responseMessage").innerText = "";
+
       // Required values
       const chlorine = parseFloat(document.getElementById("chlorine").value);
       const ph = parseFloat(document.getElementById("ph").value);
