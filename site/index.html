@@ -29,7 +29,7 @@
   <script>
     document.getElementById("numericForm").addEventListener("submit", function(event) {
       event.preventDefault();  // Prevent form submission
-
+      
       // Clear previous message from the responseMessage div
       document.getElementById("responseMessage").innerText = "";
 
@@ -54,6 +54,10 @@
         data.totalAlkalinity = parseInt(totalAlkalinityInput);
       }
 
+      // Create an AbortController to timeout the fetch after 4 seconds (4000 ms)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
       // Send the data to the server
       fetch('http://34.236.50.40:8080/webhook', {
         method: 'POST',
@@ -61,10 +65,12 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
-        mode: "cors"
+        mode: "cors",
+        signal: controller.signal
       })
       .then(response => response.json())
       .then(data => {
+        clearTimeout(timeoutId);  // Clear the timeout if successful
         console.log('Success:', data);
         // Update the page with a success message
         document.getElementById("responseMessage").innerText = "Success! Server replied: " + JSON.stringify(data);
@@ -72,8 +78,10 @@
         document.getElementById("numericForm").reset();
       })
       .catch(error => {
+        clearTimeout(timeoutId);
         console.error('Error:', error);
-        document.getElementById("responseMessage").innerText = "An error occurred: " + error;
+        let errorMessage = error.name === 'AbortError' ? "Request timed out after 4 seconds." : error;
+        document.getElementById("responseMessage").innerText = "An error occurred: " + errorMessage;
       });
     });
   </script>
