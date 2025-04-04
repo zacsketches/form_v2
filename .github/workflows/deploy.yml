@@ -3,7 +3,7 @@ name: Deploy to S3
 on:
   push:
     branches:
-      - main  # Change this if your default branch is different
+      - main 
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
       - name: Sync to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
-          args: --delete --exclude ".git/*" # recommendation on this exclude is from jakejarvis
+          args: --delete # --exclude ".git/*" recommendation on this exclude is from jakejarvis
         env:
           AWS_S3_BUCKET: ${{ vars.DEV_SITE_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
