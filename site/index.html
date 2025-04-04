@@ -1,70 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EZ Harbor Pool Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EZ Harbor Pool Test</title>
 </head>
 <body>
-    <h1>Enter Pool Test Values</h1>
-    <form id="numericForm">
-        <label for="chlorine">Chlorine:</label>
-        <input type="number" id="chlorine" name="chlorine" step="0.1" required><br><br>
+  <h1>Enter Pool Test Values</h1>
+  <form id="numericForm">
+    <label for="chlorine">Chlorine:</label>
+    <input type="number" id="chlorine" name="chlorine" step="0.1" required><br><br>
 
-        <label for="ph">Ph:</label>
-        <input type="number" id="ph" name="ph" step="0.1" required><br><br>
+    <label for="ph">Ph:</label>
+    <input type="number" id="ph" name="ph" step="0.1" required><br><br>
 
-        <label for="acidDemand">Acid Demand (drops):</label>
-        <input type="number" id="acidDemand" name="acidDemand" step="1"><br><br>
+    <label for="acidDemand">Acid Demand (drops):</label>
+    <input type="number" id="acidDemand" name="acidDemand" step="1"><br><br>
 
-        <label for="totalAlkalinity">Total Alkalinity (drops):</label>
-        <input type="number" id="totalAlkalinity" name="totalAlkalinity" step="1"><br><br>
+    <label for="totalAlkalinity">Total Alkalinity (drops):</label>
+    <input type="number" id="totalAlkalinity" name="totalAlkalinity" step="1"><br><br>
 
-        <button type="submit">Submit</button>
-    </form>
+    <button type="submit">Submit</button>
+  </form>
 
-    <script>
-        document.getElementById("numericForm").addEventListener("submit", function(event) {
-            event.preventDefault();  // Prevent form submission
+  <!-- Div to show the server response -->
+  <div id="responseMessage" style="margin-top:20px; font-weight:bold;"></div>
 
-            // Required values
-            const chlorine = parseFloat(document.getElementById("chlorine").value);
-            const ph = parseFloat(document.getElementById("ph").value);
+  <script>
+    document.getElementById("numericForm").addEventListener("submit", function(event) {
+      event.preventDefault();  // Prevent form submission
 
-            // Optional values
-            const acidDemandInput = document.getElementById("acidDemand").value;
-            const totalAlkalinityInput = document.getElementById("totalAlkalinity").value;
+      // Required values
+      const chlorine = parseFloat(document.getElementById("chlorine").value);
+      const ph = parseFloat(document.getElementById("ph").value);
 
-            const data = {
-                chlorine,
-                ph
-            };
+      // Optional values
+      const acidDemandInput = document.getElementById("acidDemand").value;
+      const totalAlkalinityInput = document.getElementById("totalAlkalinity").value;
 
-            if (acidDemandInput !== "") {
-                data.acidDemand = parseInt(acidDemandInput);
-            }
+      const data = {
+        chlorine,
+        ph
+      };
 
-            if (totalAlkalinityInput !== "") {
-                data.totalAlkalinity = parseInt(totalAlkalinityInput);
-            }
+      if (acidDemandInput !== "") {
+        data.acidDemand = parseInt(acidDemandInput);
+      }
 
-            // Send the data to the server
-            fetch('http://34.236.50.40:8080/webhook', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data),
-                mode: "cors"
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
+      if (totalAlkalinityInput !== "") {
+        data.totalAlkalinity = parseInt(totalAlkalinityInput);
+      }
+
+      // Send the data to the server
+      fetch('http://34.236.50.40:8080/webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+        mode: "cors"
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        // Update the page with a success message
+        document.getElementById("responseMessage").innerText = "Success! Server replied: " + JSON.stringify(data);
+        // Clear the form fields on a successful response
+        document.getElementById("numericForm").reset();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("responseMessage").innerText = "An error occurred: " + error;
+      });
+    });
+  </script>
 </body>
 </html>
