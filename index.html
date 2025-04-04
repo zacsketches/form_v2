@@ -3,16 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numeric Input Form</title>
+    <title>Pool Test Input Form</title>
 </head>
 <body>
-    <h1>Enter Numeric Values</h1>
+    <h1>Enter Pool Test Values</h1>
     <form id="numericForm">
-        <label for="value1">Value 1:</label>
-        <input type="number" id="value1" name="value1" step="any" required><br><br>
+        <label for="chlorine">Chlorine:</label>
+        <input type="number" id="chlorine" name="chlorine" step="0.1" required><br><br>
 
-        <label for="value2">Value 2:</label>
-        <input type="number" id="value2" name="value2" step="any" required><br><br>
+        <label for="ph">Ph:</label>
+        <input type="number" id="ph" name="ph" step="0.1" required><br><br>
+
+        <label for="acidDemand">Acid Demand (drops):</label>
+        <input type="number" id="acidDemand" name="acidDemand" step="1"><br><br>
+
+        <label for="totalAlkalinity">Total Alkalinity (drops):</label>
+        <input type="number" id="totalAlkalinity" name="totalAlkalinity" step="1"><br><br>
 
         <button type="submit">Submit</button>
     </form>
@@ -20,16 +26,27 @@
     <script>
         document.getElementById("numericForm").addEventListener("submit", function(event) {
             event.preventDefault();  // Prevent form submission
-            
-            // Get the input values
-            const value1 = document.getElementById("value1").value;
-            const value2 = document.getElementById("value2").value;
 
-            // Create a JSON object with the values
+            // Required values
+            const chlorine = parseFloat(document.getElementById("chlorine").value);
+            const ph = parseFloat(document.getElementById("ph").value);
+
+            // Optional values
+            const acidDemandInput = document.getElementById("acidDemand").value;
+            const totalAlkalinityInput = document.getElementById("totalAlkalinity").value;
+
             const data = {
-                value1: parseFloat(value1),
-                value2: parseFloat(value2)
+                chlorine,
+                ph
             };
+
+            if (acidDemandInput !== "") {
+                data.acidDemand = parseInt(acidDemandInput);
+            }
+
+            if (totalAlkalinityInput !== "") {
+                data.totalAlkalinity = parseInt(totalAlkalinityInput);
+            }
 
             // Send the data to the server
             fetch('http://34.236.50.40:8080/webhook', {
@@ -38,7 +55,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data),
-                mode: "cors"  // Enables CORS support
+                mode: "cors"
             })
             .then(response => response.json())
             .then(data => {
