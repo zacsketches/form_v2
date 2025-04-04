@@ -16,7 +16,7 @@ jobs:
       - name: Render final index.html
         run: |
           # Use envsubst to replace placeholders in the template
-          envsubst < ./site/index.template.html > ./site/index.html
+          envsubst < ./src/index.template.html > ./site/index.html
         env: 
           SERVER_IP: ${{ vars.SERVER_IP}}
           SERVER_PORT: ${{vars.SERVER_PORT}}
@@ -24,7 +24,7 @@ jobs:
       - name: Sync to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
-          args: --delete --exclude 'site/index.template.html' # remove all previous content from the bucket
+          args: --delete # remove all previous content from the bucket
         env:
           AWS_S3_BUCKET: ${{ vars.DEV_SITE_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
