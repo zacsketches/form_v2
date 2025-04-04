@@ -16,7 +16,7 @@ jobs:
       - name: Render final index.html
         run: |
           # Use envsubst to replace placeholders in the template
-          envsubst < .site/index.tempate.html > ./site/index.html
+          envsubst < .site/index.template.html > ./site/index.html
         env: 
           SERVER_IP: ${{ vars.SERVER_IP}}
           SERVER_PORT: ${{vars.SERVER_PORT}}
