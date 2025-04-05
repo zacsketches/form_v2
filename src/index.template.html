@@ -59,7 +59,7 @@
       const timeoutId = setTimeout(() => controller.abort(), 4000);
 
       // Send the data to the server
-      fetch('http://34.236.50.40:8080/webhook', {
+      fetch('http://${SERVER_IP}:${SERVER_PORT}/webhook', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
