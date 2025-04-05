@@ -18,6 +18,7 @@
       opacity: 0;
       transition: opacity 0.3s ease;
       max-width: 240px;
+      pointer-events: none;
     }
     .tooltip.show {
       opacity: 1;
@@ -26,7 +27,7 @@
 </head>
 <body>
   <h1>Enter Pool Test Values</h1>
-  <form id="numericForm" style="position: relative;">
+  <form id="numericForm">
     <!-- Date Field with formatted display moved to the top -->
     <label for="testDate">Date:</label>
     <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" required>
@@ -102,9 +103,10 @@
       if (!match || monthsMap[match[2].toLowerCase()] === undefined) {
         tooltip.classList.add("show");
         const rect = dateInput.getBoundingClientRect();
-        tooltip.style.position = "absolute";
-        tooltip.style.left = dateInput.offsetLeft + "px";
-        tooltip.style.top = (dateInput.offsetTop + dateInput.offsetHeight + 4) + "px";
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        tooltip.style.left = (rect.left + scrollLeft) + "px";
+        tooltip.style.top = (rect.bottom + scrollTop + 4) + "px";
         dateInput.focus();
         return;
       }
