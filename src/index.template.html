@@ -5,18 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EZ Harbor Pool Test</title>
   <style>
-    .invalid {
-      border-color: red;
-    }
     .tooltip {
       position: absolute;
       background: #333;
       color: #fff;
-      padding: 6px 10px;
+      padding: 20px 10px;
       border-radius: 4px;
-      font-size: 0.8em;
+      font-size: 0.9em;
+      font-family: sans-serif;
       margin-top: 2px;
       z-index: 10;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-width: 240px;
+    }
+    .tooltip.show {
+      opacity: 1;
     }
   </style>
 </head>
@@ -26,7 +30,7 @@
     <!-- Date Field with formatted display moved to the top -->
     <label for="testDate">Date:</label>
     <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" required>
-    <div id="dateTooltip" class="tooltip" style="display: none;">Please enter a valid date (e.g., 05-Apr-25).</div>
+    <div id="dateTooltip" class="tooltip">Please enter a valid date (e.g., 05-Apr-25).</div>
     <br><br>
 
     <label for="chlorine">Chlorine:</label>
@@ -50,7 +54,7 @@
   <script>
     function formatDate(date) {
       if (!(date instanceof Date) || isNaN(date.getTime())) {
-          return "--";
+        return "--";
       }
 
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -68,9 +72,15 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const testDateField = document.getElementById('testDate');
+      const tooltip = document.getElementById("dateTooltip");
+
       if (testDateField && !testDateField.value) {
         testDateField.value = formatDate(new Date());
       }
+
+      testDateField.addEventListener('input', () => {
+        tooltip.classList.remove("show");
+      });
     });
 
     document.getElementById('testDate').value = formatDate(new Date());
@@ -80,8 +90,7 @@
 
       const dateInput = document.getElementById("testDate");
       const tooltip = document.getElementById("dateTooltip");
-      tooltip.style.display = "none";
-      dateInput.classList.remove("invalid");
+      tooltip.classList.remove("show");
 
       const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/i;
       const monthsMap = {
@@ -91,8 +100,7 @@
 
       const match = dateInput.value.match(dateRegex);
       if (!match || monthsMap[match[2].toLowerCase()] === undefined) {
-        dateInput.classList.add("invalid");
-        tooltip.style.display = "block";
+        tooltip.classList.add("show");
         const rect = dateInput.getBoundingClientRect();
         tooltip.style.position = "absolute";
         tooltip.style.left = dateInput.offsetLeft + "px";
