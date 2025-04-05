@@ -10,7 +10,7 @@
   <form id="numericForm">
     <!-- Date Field with formatted display moved to the top -->
     <label for="testDate">Date:</label>
-    <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" value="dd-mmm-yy" required>
+    <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" required>
     <br><br>
 
     <label for="chlorine">Chlorine:</label>
@@ -47,17 +47,23 @@
 
       const dateInput = document.getElementById("testDate").value;
 
-      const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/;
-      const monthsMap = {"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11};
+      // This regex will match on the month format, but has formatting errors
+      // const monthRegex = /(?i)\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/;
+
+      const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/i;
+      const monthsMap = {
+        "jan": 0, "feb": 1, "mar": 2, "apr": 3, "may": 4, "jun": 5,
+        "jul": 6, "aug": 7, "sep": 8, "oct": 9, "nov": 10, "dec": 11
+      };
 
       const match = dateInput.match(dateRegex);
-      if (!match || monthsMap[match[2]] === undefined) {
+      if (!match || monthsMap[match[2].toLowerCase()] === undefined) {
         alert("Invalid date format. Please enter as dd-mmm-yy (e.g., 05-Apr-25).");
         return;
       }
 
       const day = match[1];
-      const month = monthsMap[match[2]];
+      const month = monthsMap[match[2].toLowerCase()];
       const year = `20${match[3]}`;
 
       const isoDate = new Date(year, month, day).toISOString().split('T')[0];
