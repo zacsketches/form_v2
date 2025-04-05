@@ -33,12 +33,33 @@
 
   <script>
     function formatDate(date) {
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const day = String(date.getDate()).padStart(2, '0');
       const month = months[date.getMonth()];
       const year = String(date.getFullYear()).slice(-2);
-      return `${day}-${month}-${year}`;
+      const formatted = `${day}-${month}-${year}`;
+      console.log("Formatted date is:", formatted);
+      return formatted;
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const testDateField = document.getElementById('testDate');
+      console.log("testDate field found:", !!testDateField);
+
+      if (testDateField) {
+        console.log("Current value of testDate field:", testDateField.value);
+        if (!testDateField.value) {
+          const today = formatDate(new Date());
+          testDateField.value = today;
+          console.log("Date field was empty — setting value to:", today);
+        } else {
+          console.log("Date field already had a value, so it was left unchanged.");
+        }
+      } else {
+        console.warn("No element found with id 'testDate'");
+      }
+    });
 
     document.getElementById('testDate').value = formatDate(new Date());
 
@@ -47,8 +68,17 @@
 
       const dateInput = document.getElementById("testDate").value;
 
-      // This regex will match on the month format, but has formatting errors
-      // const monthRegex = /(?i)\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/;
+      const monthRegex = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i;
+
+      // Test cases
+      console.log(monthRegex.test("Jan"));         // true
+      console.log(monthRegex.test("JAN"));         // true
+      console.log(monthRegex.test("jan"));         // true
+      console.log(monthRegex.test("JaN"));         // true
+      console.log(monthRegex.test("January"));     // false (not a 3-letter abbreviation)
+      console.log(monthRegex.test("05-Jan-25"));   // true (contains "Jan")
+      console.log(monthRegex.test("05-January-25"));// false
+      console.log(monthRegex.test("abc"));         // false
 
       const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/i;
       const monthsMap = {
