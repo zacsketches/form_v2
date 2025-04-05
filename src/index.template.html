@@ -4,14 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EZ Harbor Pool Test</title>
+  <style>
+    .invalid {
+      border-color: red;
+    }
+    .tooltip {
+      position: absolute;
+      background: #333;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      margin-top: 2px;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
   <h1>Enter Pool Test Values</h1>
-  <form id="numericForm">
+  <form id="numericForm" style="position: relative;">
     <!-- Date Field with formatted display moved to the top -->
     <label for="testDate">Date:</label>
     <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" required>
-    <span id="dateError" style="color:red; display:none; font-size:0.9em;">Please enter a valid date (e.g., 05-Apr-25).</span>
+    <div id="dateTooltip" class="tooltip" style="display: none;">Please enter a valid date (e.g., 05-Apr-25).</div>
     <br><br>
 
     <label for="chlorine">Chlorine:</label>
@@ -63,9 +78,10 @@
     document.getElementById("numericForm").addEventListener("submit", function(event) {
       event.preventDefault();
 
-      const dateInput = document.getElementById("testDate").value;
-      const dateError = document.getElementById("dateError");
-      dateError.style.display = "none";
+      const dateInput = document.getElementById("testDate");
+      const tooltip = document.getElementById("dateTooltip");
+      tooltip.style.display = "none";
+      dateInput.classList.remove("invalid");
 
       const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/i;
       const monthsMap = {
@@ -73,10 +89,15 @@
         "jul": 6, "aug": 7, "sep": 8, "oct": 9, "nov": 10, "dec": 11
       };
 
-      const match = dateInput.match(dateRegex);
+      const match = dateInput.value.match(dateRegex);
       if (!match || monthsMap[match[2].toLowerCase()] === undefined) {
-        dateError.style.display = "inline";
-        document.getElementById("testDate").focus();
+        dateInput.classList.add("invalid");
+        tooltip.style.display = "block";
+        const rect = dateInput.getBoundingClientRect();
+        tooltip.style.position = "absolute";
+        tooltip.style.left = dateInput.offsetLeft + "px";
+        tooltip.style.top = (dateInput.offsetTop + dateInput.offsetHeight + 4) + "px";
+        dateInput.focus();
         return;
       }
 
