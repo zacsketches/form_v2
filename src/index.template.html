@@ -82,10 +82,10 @@
       //   testDateField.value = formatDate(new Date());
       // }
 
-      // testDateField.addEventListener('input', () => {
-      //   tooltip.classList.remove("show");
-      //   document.getElementById('responseMessage').innerText = ''; // Clear the responseMessage
-      // });
+      testDateField.addEventListener('input', () => {
+        tooltip.classList.remove("show");
+        document.getElementById('responseMessage').innerText = ''; // Clear the responseMessage
+      });
 
       // Add 'input' event listeners to all input fields to clear the responseMessage
       const inputFields = document.querySelectorAll('input');
