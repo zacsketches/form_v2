@@ -11,6 +11,7 @@
     <!-- Date Field with formatted display moved to the top -->
     <label for="testDate">Date:</label>
     <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" required>
+    <span id="dateError" style="color:red; display:none; font-size:0.9em;">Please enter a valid date (e.g., 05-Apr-25).</span>
     <br><br>
 
     <label for="chlorine">Chlorine:</label>
@@ -34,7 +35,6 @@
   <script>
     function formatDate(date) {
       if (!(date instanceof Date) || isNaN(date.getTime())) {
-          console.error("Invalid Date object passed to formatDate:", date);
           return "--";
       }
 
@@ -46,35 +46,15 @@
       const month = months[monthIndex];
       const year = String(date.getFullYear()).slice(-2);
 
-      console.log("Date parts — Day:", day, "Month index:", monthIndex, "Month name:", month, "Year:", year);
+      if (!month) return "--";
 
-      if (!month) {
-        console.error("Month index out of range or undefined:", monthIndex);
-        return "--";
-      }
-
-      //const formatted = day + '-' + month + '-' + year;
-      const formatted = [day, month, year].join('-');
-      console.log("Formatted date is:", formatted);
-      return formatted;
+      return [day, month, year].join('-');
     }
-
 
     window.addEventListener('DOMContentLoaded', () => {
       const testDateField = document.getElementById('testDate');
-      console.log("testDate field found:", !!testDateField);
-
-      if (testDateField) {
-        console.log("Current value of testDate field:", testDateField.value);
-        if (!testDateField.value) {
-          const today = formatDate(new Date());
-          testDateField.value = today;
-          console.log("Date field was empty — setting value to:", today);
-        } else {
-          console.log("Date field already had a value, so it was left unchanged.");
-        }
-      } else {
-        console.warn("No element found with id 'testDate'");
+      if (testDateField && !testDateField.value) {
+        testDateField.value = formatDate(new Date());
       }
     });
 
@@ -84,18 +64,8 @@
       event.preventDefault();
 
       const dateInput = document.getElementById("testDate").value;
-
-      const monthRegex = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i;
-
-      // Test cases
-      console.log(monthRegex.test("Jan"));         // true
-      console.log(monthRegex.test("JAN"));         // true
-      console.log(monthRegex.test("jan"));         // true
-      console.log(monthRegex.test("JaN"));         // true
-      console.log(monthRegex.test("January"));     // false (not a 3-letter abbreviation)
-      console.log(monthRegex.test("05-Jan-25"));   // true (contains "Jan")
-      console.log(monthRegex.test("05-January-25"));// false
-      console.log(monthRegex.test("abc"));         // false
+      const dateError = document.getElementById("dateError");
+      dateError.style.display = "none";
 
       const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/i;
       const monthsMap = {
@@ -105,7 +75,8 @@
 
       const match = dateInput.match(dateRegex);
       if (!match || monthsMap[match[2].toLowerCase()] === undefined) {
-        alert("Invalid date format. Please enter as dd-mmm-yy (e.g., 05-Apr-25).");
+        dateError.style.display = "inline";
+        document.getElementById("testDate").focus();
         return;
       }
 
@@ -144,7 +115,6 @@
       })
       .catch(error => {
         clearTimeout(timeoutId);
-        console.error('Error:', error);
         let errorMessage = error.name === 'AbortError' ? "Request timed out after 4 seconds." : error;
         document.getElementById("responseMessage").innerText = "An error occurred: " + errorMessage;
       });
