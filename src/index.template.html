@@ -35,7 +35,7 @@
     function formatDate(date) {
       if (!(date instanceof Date) || isNaN(date.getTime())) {
           console.error("Invalid Date object passed to formatDate:", date);
-          return "--XX";
+          return "--";
       }
 
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -50,10 +50,11 @@
 
       if (!month) {
         console.error("Month index out of range or undefined:", monthIndex);
-        return "--YY";
+        return "--";
       }
 
-      const formatted = day + '-' + month + '-' + year;
+      //const formatted = day + '-' + month + '-' + year;
+      const formatted = [day, month, year].join('-');
       console.log("Formatted date is:", formatted);
       return formatted;
     }
