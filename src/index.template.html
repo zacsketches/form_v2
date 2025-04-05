@@ -8,9 +8,9 @@
 <body>
   <h1>Enter Pool Test Values</h1>
   <form id="numericForm">
-    <!-- Date Field with formatted display -->
+    <!-- Date Field with formatted display moved to the top -->
     <label for="testDate">Date:</label>
-    <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" required>
+    <input type="text" id="testDate" name="testDate" placeholder="dd-mmm-yy" value="dd-mmm-yy" required>
     <br><br>
 
     <label for="chlorine">Chlorine:</label>
@@ -32,31 +32,23 @@
   <div id="responseMessage" style="margin-top:20px; font-weight:bold;"></div>
 
   <script>
-    // Utility function to format date as dd-mmm-yy
     function formatDate(date) {
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const day = String(date.getDate()).padStart(2, '0');
       const month = months[date.getMonth()];
       const year = String(date.getFullYear()).slice(-2);
       return `${day}-${month}-${year}`;
     }
 
-    // Set today's date as default formatted date on page load
     document.getElementById('testDate').value = formatDate(new Date());
 
-    // Validate and parse date input before submission
     document.getElementById("numericForm").addEventListener("submit", function(event) {
       event.preventDefault();
 
       const dateInput = document.getElementById("testDate").value;
 
-      // Regular expression for dd-mmm-yy validation
       const dateRegex = /^(\d{2})-([A-Za-z]{3})-(\d{2})$/;
-      const monthsMap = {
-        "Jan":0, "Feb":1, "Mar":2, "Apr":3, "May":4, "Jun":5,
-        "Jul":6, "Aug":7, "Sep":8, "Oct":9, "Nov":10, "Dec":11
-      };
+      const monthsMap = {"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11};
 
       const match = dateInput.match(dateRegex);
       if (!match || monthsMap[match[2]] === undefined) {
@@ -64,56 +56,38 @@
         return;
       }
 
-      // Convert input to ISO date (yyyy-mm-dd) for submission
       const day = match[1];
       const month = monthsMap[match[2]];
-      const year = `20${match[3]}`; // Assumes 21st century dates
+      const year = `20${match[3]}`;
 
       const isoDate = new Date(year, month, day).toISOString().split('T')[0];
 
-      // Collect other form values
       const chlorine = parseFloat(document.getElementById("chlorine").value);
       const ph = parseFloat(document.getElementById("ph").value);
       const acidDemandInput = document.getElementById("acidDemand").value;
       const totalAlkalinityInput = document.getElementById("totalAlkalinity").value;
 
-      const data = {
-        chlorine,
-        ph,
-        testDate: isoDate // submit date in standard format
-      };
+      const data = { chlorine, ph, testDate: isoDate };
 
-      if (acidDemandInput !== "") {
-        data.acidDemand = parseInt(acidDemandInput);
-      }
+      if (acidDemandInput !== "") data.acidDemand = parseInt(acidDemandInput);
+      if (totalAlkalinityInput !== "") data.totalAlkalinity = parseInt(totalAlkalinityInput);
 
-      if (totalAlkalinityInput !== "") {
-        data.totalAlkalinity = parseInt(totalAlkalinityInput);
-      }
-
-      // Create an AbortController to timeout the fetch after 4 seconds (4000 ms)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-      // Send the data to the server
       fetch('http://${SERVER_IP}:${SERVER_PORT}/webhook', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
         mode: "cors",
         signal: controller.signal
       })
       .then(response => response.json())
       .then(data => {
-        clearTimeout(timeoutId);  // Clear the timeout if successful
-        console.log('Success:', data);
-        // Update the page with a success message
+        clearTimeout(timeoutId);
         document.getElementById("responseMessage").innerText = "Success! Server replied: " + JSON.stringify(data);
-        // Clear the form fields on a successful response and reset date to today
         document.getElementById("numericForm").reset();
-        document.getElementById('testDate').valueAsDate = new Date();
+        document.getElementById('testDate').value = formatDate(new Date());
       })
       .catch(error => {
         clearTimeout(timeoutId);
